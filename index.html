@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360 View de Producto</title>
+    <style>
+        #viewer {
+            width: 600px;
+            height: 400px;
+            margin: auto;
+            overflow: hidden;
+            background-color: #f3f3f3;
+            cursor: grab;
+            position: relative;
+        }
+
+        #viewer img {
+            width: 100%;
+            height: auto;
+            display: none;
+            position: absolute;
+        }
+
+        #viewer img.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="viewer"></div>
+
+    <script>
+        const viewer = document.getElementById('viewer');
+        const totalFrames = 6; // Cambiado a 6 para mostrar solo de product_1 a product_6
+        let currentFrame = 1;
+        let images = [];
+
+        // Cargar imágenes
+        for (let i = 0; i < totalFrames; i++) {
+            const img = new Image();
+            img.src = `./product_${i + 1}.png`; // Cargar las imágenes de product_1 a product_6
+            img.className = i === 0 ? 'active' : '';
+            viewer.appendChild(img);
+            images.push(img);
+        }
+
+        let isDragging = false;
+        let startX;
+
+        viewer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.pageX;
+            viewer.style.cursor = 'grabbing';
+        });
+
+        viewer.addEventListener('mouseup', () => {
+            isDragging = false;
+            viewer.style.cursor = 'grab';
+        });
+
+        viewer.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.pageX - startX;
+                if (dx > 10) {
+                    nextFrame();
+                    startX = e.pageX;
+                } else if (dx < -10) {
+                    previousFrame();
+                    startX = e.pageX;
+                }
+            }
+        });
+
+        function nextFrame() {
+            images[currentFrame].classList.remove('active');
+            currentFrame = (currentFrame + 1) % totalFrames;
+            images[currentFrame].classList.add('active');
+        }
+
+        function previousFrame() {
+            images[currentFrame].classList.remove('active');
+            currentFrame = (currentFrame - 1 + totalFrames) % totalFrames;
+            images[currentFrame].classList.add('active');
+        }
+    </script>
+</body>
+</html>
